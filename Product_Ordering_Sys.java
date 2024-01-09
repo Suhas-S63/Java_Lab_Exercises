@@ -167,7 +167,8 @@ public class Product_Ordering_Sys {
             System.out.println("6. Modify Product Details");
             System.out.println("7. Place Order");
             System.out.println("8. Modify Order");
-            System.out.println("9. Exit");
+            System.out.println("9. Generate Billing Information");
+            System.out.println("10. Exit");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
 
@@ -197,6 +198,9 @@ public class Product_Ordering_Sys {
                     modifyOrder(scanner);
                     break;
                 case 9:
+                    generateBill();
+                    break;
+                case 10:
                     System.out.println("Exiting...");
                     System.exit(0);
                     break;
@@ -255,13 +259,20 @@ public class Product_Ordering_Sys {
         String orderProductID = scanner.next();
         System.out.print("Enter order quantity: ");
         int orderQuantity = scanner.nextInt();
-        double orderPrice = productMap.get(orderProductID).getPrice() * orderQuantity;
-
-        Order newOrder = new Order(orderID, orderCustomerName, orderProductID, orderQuantity,orderPrice);
-        orders.add(newOrder);
-        orderTreeSet.add(newOrder);
-
-        System.out.println("Order added successfully.");
+    
+        Product orderedProduct = productMap.get(orderProductID);
+    
+        if (orderedProduct != null) {
+            double orderPrice = orderedProduct.getPrice() * orderQuantity;
+    
+            Order newOrder = new Order(orderID, orderCustomerName, orderProductID, orderQuantity, orderPrice);
+            orders.add(newOrder);
+            orderTreeSet.add(newOrder);
+    
+            System.out.println("Order added successfully.");
+        } else {
+            System.out.println("Error: Product not found for the given ID.");
+        }
     }
 
     // Function for updating Customer details
@@ -375,4 +386,27 @@ public class Product_Ordering_Sys {
         }
         return null;
     }
+
+    private static void generateBill() {
+        System.out.println("----- Bill Details -----");
+    
+        for (Order order : orderTreeSet) {
+            System.out.println("Order ID: " + order.getId());
+            System.out.println("Customer Name: " + order.getCustomerName());
+    
+            Product orderedProduct = productMap.get(order.getProductId());
+    
+            if (orderedProduct != null) {
+                System.out.println("Product ID: " + orderedProduct.getId());
+                System.out.println("Product Name: " + orderedProduct.getName());
+                System.out.println("Quantity: " + order.getQuantity());
+                System.out.println("Price per Unit: Rs" + orderedProduct.getPrice());
+                System.out.println("Total Price: Rs" + order.getTotalPrice());
+                System.out.println("------------------------");
+            } else {
+                System.out.println("Error: Product not found for the order.");
+            }
+        }
+    }
+    
 }
